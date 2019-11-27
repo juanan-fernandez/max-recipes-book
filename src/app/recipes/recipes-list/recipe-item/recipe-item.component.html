@@ -1,1 +1,13 @@
-<p>recipe-item works!</p>
+<a href="#" class="list-group-item clearfix" (click)="verReceta()">
+    <div class="pull-left">
+        <h4 class="list-group-item-heading">{{itemReceta.name}}</h4>
+        <p class="list-group-item-text">{{itemReceta.description}}</p>
+    </div>
+    <span class="pull-right">
+        <!--también es válida la form <img src={{receta.imagePath}}> en este caso uso property binding-->
+        <img 
+            [src]="itemReceta.imagePath"
+            alt="{{itemReceta.name}}" 
+            class="img-responsive" style="max-width: 50px;"/>
+    </span>
+</a><br>

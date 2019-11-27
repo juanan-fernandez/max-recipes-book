@@ -1,5 +1,9 @@
 {
   "extends": "tslint:recommended",
+  "indent": false,
+  "max-line-length":false,
+  "no-trailing-whitespace": false,
+  "comment-format": true,
   "rules": {
     "array-type": false,
     "arrow-parens": false,

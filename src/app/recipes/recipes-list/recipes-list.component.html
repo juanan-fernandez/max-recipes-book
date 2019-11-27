@@ -6,21 +6,7 @@
 <hr>
 <div class="row">
     <div class="col-xs-12">
-        <a href="#" class="list-group-item clearfix"
-        *ngFor="let receta of recipes">
-            <div class="pull-left">
-                <h4 class="list-group-item-heading">{{receta.name}}</h4>
-                <p class="list-group-item-text">{{receta.description}}</p>
-            </div>
-            <span class="pull-right">
-                <!--también es válida la form <img src={{receta.imagePath}}> en este caso uso property binding-->
-                <img 
-                    [src]="receta.imagePath"
-                    alt="{{receta.name}}" 
-                    class="img-responsive" style="max-width: 50px;"/>
-            </span>
-        </a>
-        <app-recipe-item></app-recipe-item>
+        <app-recipe-item *ngFor="let receta of recipes" [itemReceta]="receta" (selectReceta)="onSelectedReceta(receta)"></app-recipe-item>
     </div>
 </div>
 
