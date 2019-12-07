@@ -11,6 +11,5 @@ export class AppComponent {
 
 	onMenu(menuItem: string) {
 		this.selectedMenu = menuItem;
-		console.log(this.selectedMenu);
 	}
 }
