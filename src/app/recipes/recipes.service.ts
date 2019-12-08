@@ -54,6 +54,12 @@ export class RecipesService {
 		return this.recipes.slice(); // con slice devolvemos una copia del array del servicio.
 	}
 
+	getRecipeById(id: number): Recipe{
+		if (id > this.recipes.length){ id = this.recipes.length - 1; }
+		if (id < 0) { id = 0;}
+		return this.recipes[id];
+	}
+
 	addIngredientsToShoppingList(receta: Recipe) {
 		this.slService.addIngredients(receta.ingredientes);
 	}

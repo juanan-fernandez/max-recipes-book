@@ -3,9 +3,6 @@
         <app-recipes-list></app-recipes-list>
     </div>
     <div class="col-md-7">
-        <app-recipes-detail *ngIf="unaReceta; else info" [detalleReceta]="unaReceta"></app-recipes-detail>
-        <ng-template #info>
-           <p>Por favor seleccione una receta para empezar a cocinar!</p> 
-        </ng-template>
+        <router-outlet></router-outlet>
     </div>
 </div>
