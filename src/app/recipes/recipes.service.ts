@@ -56,7 +56,7 @@ export class RecipesService {
 
 	getRecipeById(id: number): Recipe{
 		if (id > this.recipes.length){ id = this.recipes.length - 1; }
-		if (id < 0) { id = 0;}
+		if (id < 0) { id = 0; }
 		return this.recipes[id];
 	}
 
