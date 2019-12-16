@@ -1,6 +1,8 @@
 <div class="row">
     <div class="col-xs-12">
-        <button class="btn btn-success" [routerLink]="['new']">Nueva Receta</button>
+        <!--<button class="btn btn-success" [routerLink]="['new']">Nueva Receta</button>-- vamos a hacer el routerLink por código, aunque esta línea también sería correcta-->
+        <button class="btn btn-success" (click)="onNewRecipe()">Nueva Receta</button>
+
     </div>
 </div>
 <hr>

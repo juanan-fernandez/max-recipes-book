@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Params } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 
 import { Recipe } from '../recipe.model';
 import { RecipesService } from '../recipes.service';
@@ -20,13 +20,18 @@ export class RecipesDetailComponent implements OnInit {
 	idRecipe: number;
 	//constructor(private servicioSl: ShoppingListService) { } esta sería mi forma de hacerlo, accediendo directamente al servicio de lista
 	//la forma que propone el autor:
-	constructor(private servicioReceta: RecipesService, private router: ActivatedRoute) { }
+	constructor(private servicioReceta: RecipesService, private current: ActivatedRoute, private router: Router) { }
 	ngOnInit() {
-		this.router.params.subscribe((parametros: Params ) => {
+		this.current.params.subscribe((parametros: Params ) => {
 			this.idRecipe = +parametros['id'];
 			this.detalleReceta = this.servicioReceta.getRecipeById(this.idRecipe);
 		});
 
+	}
+
+	onEditRecipe() {
+		// this.router.navigate(['edit'], { relativeTo: this.current }); la forma más correcta sería esta línea, pero la siguiente línea también funcionaría:
+		this.router.navigate(['../', this.idRecipe, 'edit'], {relativeTo: this.current}); //para propósito demostrativo
 	}
 	
 	/*comprarIngredientes() {
@@ -39,5 +44,6 @@ export class RecipesDetailComponent implements OnInit {
 
 	onToShoppingList() {
 		this.servicioReceta.addIngredientsToShoppingList(this.detalleReceta);
+		
 	}
 }
