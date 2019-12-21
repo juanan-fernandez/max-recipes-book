@@ -17,7 +17,11 @@ export class RecipesListComponent implements OnInit {
 	constructor(private servicioRecetas: RecipesService, private router: Router, private currentRoute: ActivatedRoute) { }
 
 	ngOnInit() {
+		this.servicioRecetas.onChangedRecipes.subscribe((recipesSubject: Recipe[]) => {
+			this.recipes = recipesSubject;
+		});
 		this.recipes = this.servicioRecetas.getRecipes();
+		//this.servicioRecetas.getRecipes(); SI Usamos el Subject en la función esta sería la llamada
 	}
 
 	onNewRecipe() {

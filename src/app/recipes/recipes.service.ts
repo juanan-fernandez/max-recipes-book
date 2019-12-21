@@ -1,7 +1,8 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnInit } from '@angular/core';
 import { Recipe } from './recipe.model';
 import { Ingredient } from '../shared/ingredient.model';
 import { ShoppingListService } from '../shopping-list/shopping-list.service';
+import { Subject } from 'rxjs';
 
 
 /*@Injectable({
@@ -10,6 +11,9 @@ import { ShoppingListService } from '../shopping-list/shopping-list.service';
 
 @Injectable()
 export class RecipesService {
+
+	onChangedRecipes = new Subject<Recipe[]>();
+
 	private recipes: Recipe[] = [
 		new Recipe('Flan de turrón', 'Esto es una prueba de flan de turrón', 
 				'https://cdn.pixabay.com/photo/2015/12/20/17/11/fish-1101436_960_720.jpg',
@@ -50,7 +54,10 @@ export class RecipesService {
 
 	constructor(private slService: ShoppingListService) { }
 
+
+
 	getRecipes() {
+		//this.onChangedRecipes.next(this.recipes.slice()); TAMBIÉN FUNCIONA
 		return this.recipes.slice(); // con slice devolvemos una copia del array del servicio.
 	}
 
@@ -62,5 +69,15 @@ export class RecipesService {
 
 	addIngredientsToShoppingList(receta: Recipe) {
 		this.slService.addIngredients(receta.ingredientes);
+	}
+
+	addRecipe(newRecipe: Recipe){
+		this.recipes.push(newRecipe);
+		this.onChangedRecipes.next(this.recipes.slice());
+	}
+
+	editRecipe(id: number, newRecipe: Recipe){
+		this.recipes[id] = newRecipe;
+		this.onChangedRecipes.next(this.recipes.slice());
 	}
 }
