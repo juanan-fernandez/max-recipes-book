@@ -42,10 +42,16 @@ export class RecipeEditComponent implements OnInit {
 			this.idRecipe = this.recipeService.getRecipes().length - 1;
 		}
 		this.router.navigate(['/recipes', this.idRecipe]);
+		//también podría ser:
+		//this.router.navigate(['../'], {relativeTo: this.ruta});
 	}
 
 	onDeleteIngredient(id: number) {
-
+		(this.recipeForm.get("ingredientes") as FormArray).removeAt(id);
+		
+		//(this.recipeForm.get("ingredientes") as FormArray).clear();
+		/*The clear() method automatically loops through all registered FormControls (or FormGroups) in the FormArray and removes them.
+		It's like manually creating a loop and calling removeAt() for every item.*/
 	}
 
 	onAddIngredient() {

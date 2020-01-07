@@ -15,8 +15,8 @@
                 <li class="dropdown" appDropdown>
                     <a class="dropdown-toggle" role="button">Admin<span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                        <li><a style="cursor: pointer;">Guardar</a></li>
-                        <li><a style="cursor: pointer;">Ver datos</a></li>
+                        <li><a style="cursor: pointer;" (click)="onSave()">Guardar</a></li>
+                        <li><a style="cursor: pointer;" (click)="onFetch()">Ver datos</a></li>
                     </ul>
                 </li>
             </ul>

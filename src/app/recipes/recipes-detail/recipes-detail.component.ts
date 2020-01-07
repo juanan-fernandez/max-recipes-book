@@ -33,6 +33,11 @@ export class RecipesDetailComponent implements OnInit {
 		// this.router.navigate(['edit'], { relativeTo: this.current }); la forma más correcta sería esta línea, pero la siguiente línea también funcionaría:
 		this.router.navigate(['../', this.idRecipe, 'edit'], {relativeTo: this.current}); //para propósito demostrativo
 	}
+
+	onDeleteRecipe() {
+		this.servicioReceta.deleteRecipe(this.idRecipe);
+		this.router.navigate(['/recipes']);
+	}
 	
 	/*comprarIngredientes() {
 		this.detalleReceta.ingredientes.forEach(

@@ -5,16 +5,15 @@ import { ShoppingListService } from '../shopping-list/shopping-list.service';
 import { Subject } from 'rxjs';
 
 
-/*@Injectable({
+//QUIERO LA INSTANCIA DEL SERVICIO DISPONIBLE EN TODA LA APLICACIÓN
+@Injectable({
 	providedIn: 'root'
-}) NO LO QUIERO DISPONIBLE EN TODA LA APLICACIÓN*/
-
-@Injectable()
+}) 
 export class RecipesService {
 
 	onChangedRecipes = new Subject<Recipe[]>();
 
-	private recipes: Recipe[] = [
+	/*private recipes: Recipe[] = [
 		new Recipe('Flan de turrón', 'Esto es una prueba de flan de turrón', 
 				'https://cdn.pixabay.com/photo/2015/12/20/17/11/fish-1101436_960_720.jpg',
 				[
@@ -49,15 +48,19 @@ export class RecipesService {
 						new Ingredient('Cebolla', 1)
 					]
 				)
-	];
+	];*/
+
+	private recipes: Recipe[] = [];
 
 
 	constructor(private slService: ShoppingListService) { }
 
-
-
+	setStoredRecipes(storedRecipes: Recipe[]){
+		this.recipes = storedRecipes;
+		this.onChangedRecipes.next(this.recipes.slice());
+	}
 	getRecipes() {
-		//this.onChangedRecipes.next(this.recipes.slice()); TAMBIÉN FUNCIONA
+		//this.onChangedRecipes.next(this.recipes.slice()); //TAMBIÉN FUNCIONA
 		return this.recipes.slice(); // con slice devolvemos una copia del array del servicio.
 	}
 
@@ -76,8 +79,14 @@ export class RecipesService {
 		this.onChangedRecipes.next(this.recipes.slice());
 	}
 
-	editRecipe(id: number, newRecipe: Recipe){
+	editRecipe(id: number, newRecipe: Recipe) {
 		this.recipes[id] = newRecipe;
 		this.onChangedRecipes.next(this.recipes.slice());
 	}
+
+	deleteRecipe(id: number) {
+		this.recipes.splice(id, 1);
+		this.onChangedRecipes.next(this.recipes.slice());
+	}
+
 }
