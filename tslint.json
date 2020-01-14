@@ -4,6 +4,7 @@
 	"max-line-length": false,
 	"no-trailing-whitespace": false,
 	"rules": {
+		"variable-name": false,
 		"array-type": false,
 		"arrow-parens": false,
 		"deprecation": {
