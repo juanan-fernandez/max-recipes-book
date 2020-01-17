@@ -56,12 +56,11 @@ export class AuthService {
 			_token: string,
 			_tokenExpirationDate: string
 		} = JSON.parse(localStorage.getItem('userData'));
-		const currentUser = new User(userData.email, userData.id, userData._token, new Date(userData._tokenExpirationDate));
-
+		
 		if (!userData) {
 			return;
 		}
-
+		const currentUser = new User(userData.email, userData.id, userData._token, new Date(userData._tokenExpirationDate));
 		if (currentUser.token) {
 			this.myUser.next(currentUser);
 			const timeExpiration: number = new Date(userData._tokenExpirationDate).getTime() - new Date().getTime();
