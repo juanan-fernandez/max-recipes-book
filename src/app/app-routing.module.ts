@@ -1,34 +1,20 @@
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { RouterModule, Routes, PreloadAllModules } from '@angular/router';
 
-import { RecipesComponent } from "./recipes/recipes.component";
-import { ShoppingListComponent } from './shopping-list/shopping-list.component';
-import { RecipeStartComponent } from './recipes/recipe-start/recipe-start.component';
-import { RecipesDetailComponent } from './recipes/recipes-detail/recipes-detail.component';
-import { RecipeEditComponent } from './recipes/recipe-edit/recipe-edit.component';
-import { RecipesResolverService } from './recipes/recipes-resolver.service';
-import { AuthComponent } from './auth/auth.component';
-import { AuthGuardService } from './auth/auth-guard.service';
 
 
 const appRoutes: Routes = [
-    { path: '', redirectTo: '/recipes', pathMatch: 'full' },
-    {
-        path: 'recipes', component: RecipesComponent, canActivate: [AuthGuardService] , children: [
-            { path: '', component: RecipeStartComponent },
-            { path: 'new', component: RecipeEditComponent },
-            { path: ':id', component: RecipesDetailComponent, resolve: [RecipesResolverService] },
-            { path: ':id/edit', component: RecipeEditComponent, resolve: [RecipesResolverService] }
-        ]
-    },
-    { path: 'auth', component: AuthComponent},
-    { path: 'shopping-list', component: ShoppingListComponent }
-    
+    { path: '', redirectTo: '/auth', pathMatch: 'full' },
+    { path: 'recipes', loadChildren: () => import('./recipes/recipes.module').then(mod => mod.RecipesModule)},    //sintaxis antigua: { path: 'recipes', loadChildren: './recipes/recipes.module#RecipesModule'}
+    { path: 'shopping-list', loadChildren: () => import('./shopping-list/shopping-list.module').then(mod => mod.ShoppingListModule)},
+    { path: 'auth', loadChildren: () => import('./auth/auth.module').then(mod => mod.AuthModule)}
 ];
 
 @NgModule({
-    imports: [
-        RouterModule.forRoot(appRoutes)
+    imports: [ 
+        //optimización del lazy loading: hace una precarga de todos los módulos para que posteriormente la navegación sea más agil
+        RouterModule.forRoot(appRoutes, {preloadingStrategy: PreloadAllModules }) 
+        //RouterModule.forRoot(appRoutes)
     ],
     exports: [RouterModule]
 })

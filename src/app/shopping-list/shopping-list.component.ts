@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs';
 import { Ingredient } from '../shared/ingredient.model';
 import { ShoppingListService } from './shopping-list.service';
 
+
 @Component({
 	selector: 'app-shopping-list',
 	templateUrl: './shopping-list.component.html',

@@ -6,12 +6,13 @@ import { Directive, Renderer2, HostListener, ElementRef, HostBinding } from '@an
 })
 export class DropdownDirective {
 	clicked: boolean = false;
-	constructor(private elRef: ElementRef, private renderer: Renderer2) { }
+	//constructor(private elRef: ElementRef, private renderer: Renderer2) { }
+	constructor() {}
 	@HostBinding('class.open') isOpen: boolean = false;  // OTRA FORMA DE HACERLO CON HOSTBINDING si se devuelve true se aplica la clase, en caso contrario no se aplica.
-	@HostListener('click') toggleOpen(eventData: Event) {
+	@HostListener('click') toggleOpen() {
 		this.clicked = !this.clicked;
 		this.isOpen = !this.isOpen;
-		// OTRA FORMA DE HACERLO ->USANDO EL RENDERER
+		// OTRA FORMA DE HACERLO ->USANDO EL RENDERER: tengo que importarlo en el constructor (comentado)
 		/*if (!this.clicked) {
 			this.renderer.addClass(this.elRef.nativeElement, 'open');
 		} else {

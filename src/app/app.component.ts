@@ -9,6 +9,7 @@ import { AuthService } from './auth/auth.service';
 export class AppComponent implements OnInit {
 	title = 'Libro de recetas';
 	constructor(private authService: AuthService){}
+
 	ngOnInit() {
 		this.authService.autoLogin();
 	}
