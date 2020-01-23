@@ -1,14 +1,18 @@
-import { Injectable, OnInit } from '@angular/core';
+import { Injectable } from '@angular/core';
+import { Subject } from 'rxjs';
+import { Store } from '@ngrx/store';
+
 import { Recipe } from './recipe.model';
 import { Ingredient } from '../shared/ingredient.model';
 import { ShoppingListService } from '../shopping-list/shopping-list.service';
-import { Subject } from 'rxjs';
+import * as ShoppingListActions from '../shopping-list/store/shopping-list.actions';
+import * as fromShoppingList from '../shopping-list/store/shopping-list.reducer';
 
 
 //QUIERO LA INSTANCIA DEL SERVICIO DISPONIBLE EN TODA LA APLICACIÓN
 @Injectable({
 	providedIn: 'root'
-}) 
+})
 export class RecipesService {
 
 	onChangedRecipes = new Subject<Recipe[]>();
@@ -53,9 +57,12 @@ export class RecipesService {
 	private recipes: Recipe[] = [];
 
 
-	constructor(private slService: ShoppingListService) { }
+	constructor(
+		private slService: ShoppingListService,
+		private store: Store<fromShoppingList.AppState>
+	) { }
 
-	setStoredRecipes(storedRecipes: Recipe[]){
+	setStoredRecipes(storedRecipes: Recipe[]) {
 		this.recipes = storedRecipes;
 		this.onChangedRecipes.next(this.recipes.slice());
 	}
@@ -64,17 +71,22 @@ export class RecipesService {
 		return this.recipes.slice(); // con slice devolvemos una copia del array del servicio.
 	}
 
-	getRecipeById(id: number): Recipe{
-		if (id > this.recipes.length){ id = this.recipes.length - 1; }
+	getRecipeById(id: number): Recipe {
+		if (id > this.recipes.length) { id = this.recipes.length - 1; }
 		if (id < 0) { id = 0; }
 		return this.recipes[id];
 	}
 
-	addIngredientsToShoppingList(receta: Recipe) {
+	//solución usando servicio ShoppingList	
+	addIngredientsToShoppingListService(receta: Recipe) {
 		this.slService.addIngredients(receta.ingredientes);
 	}
 
-	addRecipe(newRecipe: Recipe){
+	addIngredientsToShoppingList(receta: Recipe) {
+		this.store.dispatch(new ShoppingListActions.AddIngredients(receta.ingredientes));
+	}
+
+	addRecipe(newRecipe: Recipe) {
 		this.recipes.push(newRecipe);
 		this.onChangedRecipes.next(this.recipes.slice());
 	}
