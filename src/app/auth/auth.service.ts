@@ -2,9 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { catchError, tap } from 'rxjs/operators';
 import { throwError, BehaviorSubject } from 'rxjs';
-import { User } from './user.model';
 import { Router } from '@angular/router';
+import { Store } from '@ngrx/store';
+
+import { User } from './user.model';
 import { environment } from '../../environments/environment';
+import * as fromApp from '../store/app.reducer';
+import * as AuthActions from './store/auth.actions';
 
 export interface AuthResponseData {
 	name: string;
@@ -23,12 +27,13 @@ export interface AuthResponseData {
 
 export class AuthService {
 
-	myUser = new BehaviorSubject<User>(null);
+	//myUser = new BehaviorSubject<User>(null);
 	private tokenExpirationTime: any;
-	constructor(private http: HttpClient, private router: Router) { }
+	constructor(private http: HttpClient, private router: Router, private store: Store<fromApp.AppState>) { }
 
 	logout() {
-		this.myUser.next(null);
+		//this.myUser.next(null);
+		this.store.dispatch(new AuthActions.LogOut());
 		this.router.navigate(['/auth']);
 		//localStorage.clear();  clears all storaged information in localStorage
 		localStorage.removeItem('userData'); //only removes userData key
@@ -57,16 +62,22 @@ export class AuthService {
 			_token: string,
 			_tokenExpirationDate: string
 		} = JSON.parse(localStorage.getItem('userData'));
-		
+
 		if (!userData) {
 			return;
 		}
 		const currentUser = new User(userData.email, userData.id, userData._token, new Date(userData._tokenExpirationDate));
 		if (currentUser.token) {
-			this.myUser.next(currentUser);
+			//this.myUser.next(currentUser);
+			this.store.dispatch(new AuthActions.Login({
+				email: currentUser.email,
+				id: currentUser.id,
+				token: currentUser.token,
+				tokenExpirationDate: new Date(userData._tokenExpirationDate)
+			}));
 			const timeExpiration: number = new Date(userData._tokenExpirationDate).getTime() - new Date().getTime();
 			this.autoLogOut(timeExpiration);
- 		}
+		}
 	}
 
 	//para controlar que cuando expire el token se cierre la sesión automaticamente
@@ -90,7 +101,8 @@ export class AuthService {
 	private handleAuthenticatedUser(email: string, id: string, token: string, expiresIn: number) {
 		const expirationDate = new Date(new Date().getTime() + (expiresIn * 1000));
 		const userAuthenticated = new User(email, id, token, expirationDate);
-		this.myUser.next(userAuthenticated);
+		this.store.dispatch(new AuthActions.Login({ email: email, id: id, token: token, tokenExpirationDate: expirationDate }));
+		//this.myUser.next(userAuthenticated);
 		this.autoLogOut(expiresIn * 1000);
 		localStorage.setItem('userData', JSON.stringify(userAuthenticated));
 	}

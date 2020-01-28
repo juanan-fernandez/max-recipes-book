@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router, UrlTree } from '@angular/router';
 import { map, take } from 'rxjs/operators';
-import { Observable, from } from 'rxjs';
+import { Observable } from 'rxjs';
+import { Store } from '@ngrx/store';
 
+import * as fromApp from '../store/app.reducer';
 import { AuthService } from './auth.service';
 
 @Injectable({
@@ -10,12 +12,15 @@ import { AuthService } from './auth.service';
 })
 export class AuthGuardService implements CanActivate {
 
-	constructor(private authService: AuthService, private router: Router) { }
+	constructor(private authService: AuthService, private router: Router, private store: Store<fromApp.AppState>) { }
 
-	canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): 
-				boolean | UrlTree | Promise<boolean | UrlTree> | Observable<boolean | UrlTree> {
-		return this.authService.myUser.pipe(
+	canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot):
+		boolean | UrlTree | Promise<boolean | UrlTree> | Observable<boolean | UrlTree> {
+		return this.store.select('auth').pipe(
 			take(1),
+			map(appState => {
+				return appState.user;
+			}),
 			map(user => {
 				//return !!user; equivalente a la siguiente línea. para mi es más legible
 				//return !user ? false : true;

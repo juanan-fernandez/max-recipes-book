@@ -8,7 +8,7 @@ import { AppComponent } from './app.component';
 import { HeaderComponent } from './header/header.component';
 import { CoreModule } from './core.module';
 import { SharedModule } from './shared/shared.module';
-import { shoppingListReducer } from './shopping-list/store/shopping-list.reducer';
+import * as fromApp from './store/app.reducer';
 
 @NgModule({
 	declarations: [
@@ -20,7 +20,7 @@ import { shoppingListReducer } from './shopping-list/store/shopping-list.reducer
 		BrowserModule, //ojo!
 		AppRoutingModule,
 		HttpClientModule,
-		StoreModule.forRoot({shoppingList: shoppingListReducer}),
+		StoreModule.forRoot(fromApp.appReducer),
 		SharedModule,
 		CoreModule
 	],

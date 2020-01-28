@@ -3,10 +3,8 @@ import { Subject } from 'rxjs';
 import { Store } from '@ngrx/store';
 
 import { Recipe } from './recipe.model';
-import { Ingredient } from '../shared/ingredient.model';
-import { ShoppingListService } from '../shopping-list/shopping-list.service';
 import * as ShoppingListActions from '../shopping-list/store/shopping-list.actions';
-import * as fromShoppingList from '../shopping-list/store/shopping-list.reducer';
+import * as fromApp from '../store/app.reducer';
 
 
 //QUIERO LA INSTANCIA DEL SERVICIO DISPONIBLE EN TODA LA APLICACIÓN
@@ -57,10 +55,7 @@ export class RecipesService {
 	private recipes: Recipe[] = [];
 
 
-	constructor(
-		private slService: ShoppingListService,
-		private store: Store<fromShoppingList.AppState>
-	) { }
+	constructor(private store: Store<fromApp.AppState>) { }
 
 	setStoredRecipes(storedRecipes: Recipe[]) {
 		this.recipes = storedRecipes;
@@ -77,10 +72,6 @@ export class RecipesService {
 		return this.recipes[id];
 	}
 
-	//solución usando servicio ShoppingList	
-	addIngredientsToShoppingListService(receta: Recipe) {
-		this.slService.addIngredients(receta.ingredientes);
-	}
 
 	addIngredientsToShoppingList(receta: Recipe) {
 		this.store.dispatch(new ShoppingListActions.AddIngredients(receta.ingredientes));
