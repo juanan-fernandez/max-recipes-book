@@ -1,13 +1,14 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
-import { DataStorageService } from '../shared/data-storage.service';
-import { AuthService } from '../auth/auth.service';
+//import { Recipe } from '../recipes/recipe.model';
+//import { DataStorageService } from '../shared/data-storage.service';
 import * as fromApp from '../store/app.reducer';
 import * as AuthActions from '../auth/store/auth.actions';
 import * as RecipeActions from '../recipes/store/recipes.actions';
+
 
 
 @Component({
@@ -18,21 +19,31 @@ export class HeaderComponent implements OnInit, OnDestroy {
 	public collapsed: boolean;
 	public isAuthenticated: boolean = false;
 	private userSub: Subscription;
+	//private storeSub: Subscription;
 
-	constructor(private dataStorage: DataStorageService,  private store: Store<fromApp.AppState>) {
+	constructor(private store: Store<fromApp.AppState>) {
 		this.collapsed = true;
 	}
 
 	ngOnInit() {
 		this.userSub = this.store.select('auth')
-					.pipe(map(authState => authState.user))
-					.subscribe(user => {
-						this.isAuthenticated = !user ? false : true;
-					});
+			.pipe(map(authState => authState.user))
+			.subscribe(user => {
+				this.isAuthenticated = !user ? false : true;
+			});
 	}
 
 	onSave() {
-		this.dataStorage.storeRecipes();
+		// let recipes: Recipe[]; esta sería mi forma de hacerlo. respeto el código del profesor por ser más eficiente
+		// this.storeSub = this.store.select('recipe').pipe(
+		// 	tap(stateData => {
+		// 		recipes = [...stateData.recipes];
+		// 	})
+		// ).subscribe();
+		// this.store.dispatch(new RecipeActions.StoreRecipes(recipes));
+		this.store.dispatch(new RecipeActions.StoreRecipes());
+		//this.dataStorage.storeRecipes();
+
 	}
 
 	onFetch() {
@@ -45,6 +56,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
 	ngOnDestroy() {
 		this.userSub.unsubscribe();
+		//if (this.storeSub) { this.storeSub.unsubscribe(); }
 	}
 
 }

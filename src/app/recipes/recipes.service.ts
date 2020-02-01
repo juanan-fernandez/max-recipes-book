@@ -5,7 +5,7 @@ import { Store } from '@ngrx/store';
 import { Recipe } from './recipe.model';
 import * as ShoppingListActions from '../shopping-list/store/shopping-list.actions';
 import * as fromApp from '../store/app.reducer';
-
+import {Ingredient} from '../shared/ingredient.model';
 
 //QUIERO LA INSTANCIA DEL SERVICIO DISPONIBLE EN TODA LA APLICACIÓN
 @Injectable({
@@ -54,13 +54,13 @@ export class RecipesService {
 
 	private recipes: Recipe[] = [];
 
-
 	constructor(private store: Store<fromApp.AppState>) { }
 
 	setStoredRecipes(storedRecipes: Recipe[]) {
 		this.recipes = storedRecipes;
-		this.onChangedRecipes.next(this.recipes.slice());
+		//this.onChangedRecipes.next(this.recipes.slice());
 	}
+
 	getRecipes() {
 		//this.onChangedRecipes.next(this.recipes.slice()); //TAMBIÉN FUNCIONA
 		return this.recipes.slice(); // con slice devolvemos una copia del array del servicio.

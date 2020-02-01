@@ -3,9 +3,9 @@ import { Recipe } from '../recipe.model';
 
 export const GET_RECIPES = '[Recipes] GET_RECIPES';
 export const FETCH_RECIPES = '[Recipes] FETCH_RECIPES';
-export const STORE_RECIPES = '[Recipes] SET_RECIPES';
+export const STORE_RECIPES = '[Recipes] STORE_RECIPES';
 export const ADD_RECIPE = '[Recipes] ADD_RECIPE';
-export const EDIT_RECIPE = '[Recipes] EDIT_RECIPE';
+export const UPDATE_RECIPE = '[Recipes] UPDATE_RECIPE';
 export const DELETE_RECIPE = '[Recipes] DELETE_RECIPE';
 
 
@@ -20,25 +20,28 @@ export class FetchRecipes implements Action{
 
 export class StoreRecipes implements Action{
     readonly type = STORE_RECIPES;
-    constructor(public payload: Recipe[]){}
+    //constructor(public payload: Recipe[]){} esto sería mi aproximación. dejamos el código del profesor porque es mejor
 }
 
 
 export class AddRecipe implements Action{
     readonly type = ADD_RECIPE;
+    constructor(public payload: Recipe){}
 }
 
-export class EditRecipe implements Action{
-    readonly type = ADD_RECIPE;
+export class UpdateRecipe implements Action{
+    readonly type = UPDATE_RECIPE;
+    constructor(public payload: {id: number, editedRecipe: Recipe}){}
 }
 
 export class DeleteRecipe implements Action{
-    readonly type = ADD_RECIPE;
+    readonly type = DELETE_RECIPE;
+    constructor(public payload: number){}
 }
 
 export type RecipesActionsType = GetRecipes |
                                     FetchRecipes |
                                     StoreRecipes |
                                     AddRecipe | 
-									EditRecipe |
+                                    UpdateRecipe |
                                     DeleteRecipe;

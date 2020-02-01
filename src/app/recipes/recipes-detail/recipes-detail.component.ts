@@ -4,8 +4,9 @@ import { map, switchMap } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
 import { Recipe } from '../recipe.model';
-import { RecipesService } from '../recipes.service';
 import * as fromApp from '../../store/app.reducer';
+import * as ShoppingListActions from '../../shopping-list/store/shopping-list.actions';
+import * as RecipesActions from '../store/recipes.actions';
 
 //import { ShoppingListService } from 'src/app/shopping-list/shopping-list.service';
 //import { Ingredient } from 'src/app/shared/ingredient.model';
@@ -24,7 +25,6 @@ export class RecipesDetailComponent implements OnInit {
 	//constructor(private servicioSl: ShoppingListService) { } esta sería mi forma de hacerlo, accediendo directamente al servicio de lista
 	//la forma que propone el autor:
 	constructor(
-		private servicioReceta: RecipesService,
 		private current: ActivatedRoute,
 		private router: Router,
 		private store: Store<fromApp.AppState>
@@ -70,7 +70,8 @@ export class RecipesDetailComponent implements OnInit {
 	}
 
 	onDeleteRecipe() {
-		this.servicioReceta.deleteRecipe(this.idRecipe);
+		//this.servicioReceta.deleteRecipe(this.idRecipe);
+		this.store.dispatch(new RecipesActions.DeleteRecipe(this.idRecipe));
 		this.router.navigate(['/recipes']);
 	}
 
@@ -83,7 +84,6 @@ export class RecipesDetailComponent implements OnInit {
 	}*/
 
 	onToShoppingList() {
-		this.servicioReceta.addIngredientsToShoppingList(this.detalleReceta);
-
+		this.store.dispatch(new ShoppingListActions.AddIngredients(this.detalleReceta.ingredientes));
 	}
 }

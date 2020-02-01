@@ -4,7 +4,7 @@ import { map, tap, take, exhaustMap } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
 import { Recipe } from '../recipes/recipe.model';
-import { RecipesService } from '../recipes/recipes.service';
+//import { RecipesService } from '../recipes/recipes.service';
 
 import * as fromApp from '../store/app.reducer';
 import * as RecipesActions from '../recipes/store/recipes.actions';
@@ -16,12 +16,11 @@ export class DataStorageService {
 
 	constructor(
 		private http: HttpClient,
-		private recipeService: RecipesService,
 		private store: Store<fromApp.AppState>) { }
 
 	storeRecipes() {
-		const recipes: Recipe[] = this.recipeService.getRecipes();
-
+		//const recipes: Recipe[] = this.recipeService.getRecipes();
+		const recipes: Recipe[] = [];
 		this.http.put('https://max-recipes-book.firebaseio.com/recetas.json', recipes).subscribe(
 			response => {
 				console.log(response);
@@ -55,7 +54,7 @@ export class DataStorageService {
 			}),
 			tap(
 				recipes => {
-					this.recipeService.setStoredRecipes(recipes);
+					//this.recipeService.setStoredRecipes(recipes);
 				}
 			)
 		);

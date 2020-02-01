@@ -26,11 +26,15 @@ export class LoginFail implements Action {
 
 export class Login implements Action {
     readonly type = LOGIN;
-    constructor(public payload: {
-        email: string,
-        id: string,
-        token: string,
-        tokenExpirationDate: Date}) { }
+    constructor(public payload: 
+        {
+            email: string;
+            id: string;
+            token: string;
+            tokenExpirationDate: Date;
+            redirect: boolean;
+        }
+    ) { }
 }
 
 export class AutoLogin implements Action {
