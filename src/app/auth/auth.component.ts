@@ -1,11 +1,15 @@
-import { Component, ComponentFactoryResolver, ViewChild, OnDestroy } from '@angular/core';
+import { Component, ComponentFactoryResolver, ViewChild, OnDestroy, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { AuthService, AuthResponseData } from './auth.service';
-import { Observable, Subscription } from 'rxjs';
+import { AuthService } from './auth.service';
+import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
+import { Store } from '@ngrx/store';
 
 import { PlaceholderDirective } from '../shared/placeholder.directive';
 import { AlertComponent } from '../shared/alert/alert.component';
+import * as fromApp from '../store/app.reducer';
+import * as AuthActions from './store/auth.actions';
+
 
 
 @Component({
@@ -13,24 +17,37 @@ import { AlertComponent } from '../shared/alert/alert.component';
 	templateUrl: './auth.component.html',
 	styleUrls: ['./auth.component.css']
 })
-export class AuthComponent implements OnDestroy {
+export class AuthComponent implements OnDestroy, OnInit {
 	logginMode: boolean = true;
 	isLoading: boolean = false;
 	strError: string = '';
 	closeSubs: Subscription;
+	storeSubs: Subscription;
 
 	@ViewChild(PlaceholderDirective, { static: true }) anAlert: PlaceholderDirective;
 
 	constructor(
 		private authService: AuthService,
 		private router: Router,
-		private componentFactoryResolver: ComponentFactoryResolver) { }
+		private componentFactoryResolver: ComponentFactoryResolver,
+		private store: Store<fromApp.AppState>
+	) { }
 
+	ngOnInit() {
+		console.log('auth component ngOnInit');
+		this.storeSubs = this.store.select('auth').subscribe(authData => {
+			this.strError = authData.authError;
+			this.isLoading = authData.isLoading;
+			if (this.strError) {
+				this.showAlertError(this.strError);
+			}
+		});
+	}
 
 	ngOnDestroy() {
-		if (this.closeSubs) {
-			this.closeSubs.unsubscribe();
-		}
+		if (this.closeSubs) { this.closeSubs.unsubscribe(); }
+		if (this.storeSubs) { this.storeSubs.unsubscribe(); }
+
 	}
 
 	onSwitchLoginMode() {
@@ -41,33 +58,23 @@ export class AuthComponent implements OnDestroy {
 
 		if (!frm.valid) { return; }
 
-		let authObserv: Observable<AuthResponseData>;
-		const valueForm = frm.value; //cuando oculto el formulario pierdo los valores, por eso los guardo en una variable
+		const email = frm.value.email;
+		const passwd = frm.value.password;
 		this.isLoading = true;
 
 		if (this.logginMode) {
-			authObserv = this.authService.login(valueForm);
+			//authObserv = this.authService.login(valueForm);
+			this.store.dispatch(new AuthActions.LoginStart({ email: email, password: passwd }));
 		} else {
-			authObserv = this.authService.signUp(valueForm);
+			//authObserv = this.authService.signUp(valueForm);
+			this.store.dispatch(new AuthActions.SingupStart({ email: email, password: passwd }));
 		}
-		authObserv.subscribe(
-			data => {
-				this.strError = '';
-				//console.log(data);
-				frm.reset();
-				this.router.navigate(['/recipes']);
-			}, errorMessage => {
-				this.strError = 'ERROR: ' + errorMessage;
-				this.showAlertError(errorMessage);
-			}
 
-		);
 		setTimeout(_ => { this.isLoading = false; }, 1000); //temporizador para que se muestre durante 1 seg. el spinner
-
 	}
 
 	onAcceptedError() {
-		this.strError = '';
+		this.store.dispatch(new AuthActions.ClearError());
 	}
 
 	//ejemplo de instanciar un component en runtime (dinamicamente)

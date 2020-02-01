@@ -1,9 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { FormGroup, FormControl, FormArray, Validators } from '@angular/forms';
+import { Store } from '@ngrx/store';
+import { map } from 'rxjs/operators';
 
 import { Recipe } from '../recipe.model';
 import { RecipesService } from '../recipes.service';
+import * as fromApp from '../../store/app.reducer';
+
 
 @Component({
 	selector: 'app-recipe-edit',
@@ -14,7 +18,12 @@ export class RecipeEditComponent implements OnInit {
 	idRecipe: number;
 	editMode: boolean = false;
 	recipeForm: FormGroup;
-	constructor(private ruta: ActivatedRoute, private router: Router, private recipeService: RecipesService) { }
+	constructor(
+		private ruta: ActivatedRoute,
+		private router: Router,
+		private recipeService: RecipesService,
+		private store: Store<fromApp.AppState>
+	) { }
 
 	ngOnInit() {
 		this.ruta.params.subscribe((params: Params) => {
@@ -26,18 +35,18 @@ export class RecipeEditComponent implements OnInit {
 
 	get controls() { // a getter!
 		return (this.recipeForm.get('ingredientes') as FormArray).controls;
-	  }
+	}
 
-	OnSubmitRecipe(){
+	OnSubmitRecipe() {
 		const newRecipe: Recipe = new Recipe(this.recipeForm.value.name, this.recipeForm.value.description, this.recipeForm.value.imagePath, this.recipeForm.value.ingredients);
 		if (this.editMode) {
 			//esta solución sería válida.
 			//this.recipeService.editRecipe(this.idRecipe, newRecipe); 
 			//gracias a los formularios reactivos como están establecidos igual que el modelo y con los mismos nombres de campo podemos pasar
 			//el formulario entero.value porque es un objeto json igual que el modelo Recipe. NO HARÍA FALTA LA PRIMERA LÍNEA CON el const
-			this.recipeService.editRecipe(this.idRecipe, this.recipeForm.value); 
-			
-		}else{
+			this.recipeService.editRecipe(this.idRecipe, this.recipeForm.value);
+
+		} else {
 			this.recipeService.addRecipe(this.recipeForm.value);
 			this.idRecipe = this.recipeService.getRecipes().length - 1;
 		}
@@ -48,7 +57,7 @@ export class RecipeEditComponent implements OnInit {
 
 	onDeleteIngredient(id: number) {
 		(this.recipeForm.get("ingredientes") as FormArray).removeAt(id);
-		
+
 		//(this.recipeForm.get("ingredientes") as FormArray).clear();
 		/*The clear() method automatically loops through all registered FormControls (or FormGroups) in the FormArray and removes them.
 		It's like manually creating a loop and calling removeAt() for every item.*/
@@ -57,14 +66,14 @@ export class RecipeEditComponent implements OnInit {
 	onAddIngredient() {
 		(this.recipeForm.get('ingredientes') as FormArray).push(
 			new FormGroup(
-			{
-				name: new FormControl(null, Validators.required),
-				amount: new FormControl(1, [Validators.required, Validators.pattern(/^[1-9]+[0-9]*$/)])
-			})
+				{
+					name: new FormControl(null, Validators.required),
+					amount: new FormControl(1, [Validators.required, Validators.pattern(/^[1-9]+[0-9]*$/)])
+				})
 		);
 	}
 
-	onCancel(){
+	onCancel() {
 		this.router.navigate(['/recipes']);
 	}
 
@@ -75,20 +84,28 @@ export class RecipeEditComponent implements OnInit {
 		const recipeIngredients = new FormArray([]);
 
 		if (this.editMode) {
-			const receta = this.recipeService.getRecipeById(this.idRecipe);
-			recipeName = receta.name;
-			urlImg = receta.imagePath;
-			description = receta.description;
-			if (receta.ingredientes){
-				receta.ingredientes.forEach( (ingrediente) => {
-					recipeIngredients.push(
-						new FormGroup({
-							name: new FormControl(ingrediente.name, Validators.required),
-							amount: new FormControl(ingrediente.amount, [Validators.required, Validators.pattern(/^[1-9]+[0-9]*$/)])
-						})
-					);
-				});
-			}
+			this.store.select('recipe').pipe(
+				map(recipeStateData => {
+					return recipeStateData.recipes.find((recipe, id) => {
+						return (id === this.idRecipe);
+					});
+				})
+			).subscribe(recipe => {
+				recipeName = recipe.name;
+				urlImg = recipe.imagePath;
+				description = recipe.description;
+				if (recipe.ingredientes) {
+					recipe.ingredientes.forEach((ingrediente) => {
+						recipeIngredients.push(
+							new FormGroup({
+								name: new FormControl(ingrediente.name, Validators.required),
+								amount: new FormControl(ingrediente.amount, [Validators.required, Validators.pattern(/^[1-9]+[0-9]*$/)])
+							})
+						);
+					});
+				}
+			});
+
 		}
 
 		this.recipeForm = new FormGroup({

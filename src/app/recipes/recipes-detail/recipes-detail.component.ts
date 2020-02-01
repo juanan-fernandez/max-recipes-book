@@ -1,8 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
+import { map, switchMap } from 'rxjs/operators';
+import { Store } from '@ngrx/store';
 
 import { Recipe } from '../recipe.model';
 import { RecipesService } from '../recipes.service';
+import * as fromApp from '../../store/app.reducer';
 
 //import { ShoppingListService } from 'src/app/shopping-list/shopping-list.service';
 //import { Ingredient } from 'src/app/shared/ingredient.model';
@@ -20,25 +23,57 @@ export class RecipesDetailComponent implements OnInit {
 	idRecipe: number;
 	//constructor(private servicioSl: ShoppingListService) { } esta sería mi forma de hacerlo, accediendo directamente al servicio de lista
 	//la forma que propone el autor:
-	constructor(private servicioReceta: RecipesService, private current: ActivatedRoute, private router: Router) { }
+	constructor(
+		private servicioReceta: RecipesService,
+		private current: ActivatedRoute,
+		private router: Router,
+		private store: Store<fromApp.AppState>
+	) { }
+
 	ngOnInit() {
-		this.current.params.subscribe((parametros: Params ) => {
+		this.current.params.subscribe((parametros: Params) => {
 			this.idRecipe = +parametros['id'];
-			this.detalleReceta = this.servicioReceta.getRecipeById(this.idRecipe);
+			this.store.select('recipe').pipe(
+				map(recipeStateData => {
+					return recipeStateData.recipes.find((recipe, index) => {
+						return (index === this.idRecipe);
+					});
+				})
+			).subscribe(recipe => {
+				this.detalleReceta = recipe;
+			});
 		});
+
+		// OTRA FORMA DE HACERLO
+		// this.current.params.pipe(
+		// 	map(myparams => {
+		// 		return +myparams['id'];
+		// 	}),
+		// 	switchMap (id => {
+		// 		this.idRecipe = id;
+		// 		return this.store.select('recipe');
+		// 	}), 
+		// 	map(recipeStateData => {
+		// 			return recipeStateData.recipes.find((recipe, index) => {
+		// 				return (index === this.idRecipe);
+		// 			});
+		// 	})
+		// ).subscribe(recipe => {
+		// 	this.detalleReceta = recipe;
+		// });
 
 	}
 
 	onEditRecipe() {
 		// this.router.navigate(['edit'], { relativeTo: this.current }); la forma más correcta sería esta línea, pero la siguiente línea también funcionaría:
-		this.router.navigate(['../', this.idRecipe, 'edit'], {relativeTo: this.current}); //para propósito demostrativo
+		this.router.navigate(['../', this.idRecipe, 'edit'], { relativeTo: this.current }); //para propósito demostrativo
 	}
 
 	onDeleteRecipe() {
 		this.servicioReceta.deleteRecipe(this.idRecipe);
 		this.router.navigate(['/recipes']);
 	}
-	
+
 	/*comprarIngredientes() {
 		this.detalleReceta.ingredientes.forEach(
 			(ingrediente: Ingredient) => {
@@ -49,6 +84,6 @@ export class RecipesDetailComponent implements OnInit {
 
 	onToShoppingList() {
 		this.servicioReceta.addIngredientsToShoppingList(this.detalleReceta);
-		
+
 	}
 }

@@ -1,9 +1,12 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { Store } from '@ngrx/store';
 
 import { Recipe } from '../recipe.model';
-import { RecipesService } from '../recipes.service';
+
+import * as fromApp from '../../store/app.reducer';
+
 
 
 
@@ -16,13 +19,20 @@ export class RecipesListComponent implements OnInit, OnDestroy {
 
 	recipes: Recipe[] = [];
 	recipeSubscriber: Subscription;
-	constructor(private servicioRecetas: RecipesService, private router: Router, private currentRoute: ActivatedRoute) { }
+	constructor(
+		private router: Router, 
+		private currentRoute: ActivatedRoute,
+		private store: Store<fromApp.AppState>) { }
 
 	ngOnInit() {
-		this.recipeSubscriber = this.servicioRecetas.onChangedRecipes.subscribe((recipesSubject: Recipe[]) => {
-			this.recipes = recipesSubject;
+		this.recipeSubscriber = this.store.select('recipe').subscribe((storeData) => {
+			this.recipes = storeData.recipes;
 		});
-		this.recipes = this.servicioRecetas.getRecipes();
+
+		// this.recipeSubscriber = this.servicioRecetas.onChangedRecipes.subscribe((recipesSubject: Recipe[]) => {
+		// 	this.recipes = recipesSubject;
+		// });
+		//this.recipes = this.servicioRecetas.getRecipes();
 		//this.servicioRecetas.getRecipes(); //SI Usamos el Subject en la función esta sería la llamada
 	}
 
